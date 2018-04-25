@@ -5,6 +5,7 @@ type rotor struct {
 	substitution string
 	turnover     rune
 	ringstellung int // changes position of internal wiring relative to alphabet/turnover
+	currPos      int // current letter-index in window
 }
 
 type navalRotor struct {
@@ -17,4 +18,9 @@ type Settings struct {
 	rotorOrder   []int
 	ringSettings []int
 	plugs        [][2]rune
+}
+
+type Enigma struct {
+	rotors    []rotor
+	plugboard string
 }
