@@ -4,7 +4,6 @@ package encoder
 type rotor struct {
 	substitution string
 	turnover     rune
-	ringstellung int // changes position of internal wiring relative to alphabet/turnover
 	currPos      int // current letter-index in window
 }
 

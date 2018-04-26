@@ -15,10 +15,11 @@ func Setup(settings Settings) Enigma {
 			panic("rotor index must be between I and V, and ring setting must be between 1 and 26")
 		}
 
+		sub := rotorSubs[rnum-1]
+
 		enig.rotors = append(enig.rotors, rotor{
-			substitution: rotorSubs[rnum-1],
+			substitution: sub[len(sub)-(rstg-1):len(sub)] + sub[0:len(sub)-(rstg-1)],
 			turnover:     rotorTurn[rnum-1],
-			ringstellung: rstg - 1,
 			currPos:      0,
 		})
 
@@ -33,7 +34,7 @@ func Initialize(enig Enigma, key string) Enigma {
 		panic("key must be 3 characters long")
 	}
 	for i := 0; i < len(enig.rotors); i++ {
-		enig.rotors[i].currPos = strings.IndexByte(ETW, key[i])
+		enig.rotors[i].currPos = strings.IndexByte(alphabet, key[i])
 	}
 	return enig
 }
@@ -53,32 +54,32 @@ func (e *Enigma) encryptLetter(startingLetter rune) byte {
 	e.stepRotors()
 
 	var letter byte
-	currIndex := strings.IndexRune(ETW, startingLetter)
+	currIndex := strings.IndexRune(alphabet, startingLetter)
 	for i := 2; i >= 0; i-- {
 		currIndex = mod26(currIndex + e.rotors[i].currPos)
 		letter = e.rotors[i].substitution[currIndex]
-		currIndex = mod26(strings.IndexByte(ETW, letter) - e.rotors[i].currPos)
+		currIndex = mod26(strings.IndexByte(alphabet, letter) - e.rotors[i].currPos)
 	}
 
 	// Reflector
 	letter = e.reflector[currIndex]
-	currIndex = strings.IndexByte(ETW, letter)
+	currIndex = strings.IndexByte(alphabet, letter)
 
 	// Backwards through rotors
 	for i := 0; i < len(e.rotors); i++ {
 		currIndex = mod26(currIndex + e.rotors[i].currPos)
-		currIndex = mod26(strings.IndexByte(e.rotors[i].substitution, ETW[currIndex]))
+		currIndex = mod26(strings.IndexByte(e.rotors[i].substitution, alphabet[currIndex]))
 		currIndex = mod26(currIndex - e.rotors[i].currPos)
-		letter = ETW[currIndex]
+		letter = alphabet[currIndex]
 	}
 
 	return letter
 }
 
 func (e *Enigma) stepRotors() {
-	if e.rotors[2].currPos == strings.IndexRune(ETW, e.rotors[2].turnover) {
+	if e.rotors[2].currPos == strings.IndexRune(alphabet, e.rotors[2].turnover) {
 		e.rotors[1].currPos++
-	} else if e.rotors[1].currPos == strings.IndexRune(ETW, e.rotors[1].turnover) {
+	} else if e.rotors[1].currPos == strings.IndexRune(alphabet, e.rotors[1].turnover) {
 		e.rotors[1].currPos++
 		e.rotors[0].currPos++
 	}

@@ -27,4 +27,9 @@ func main() {
 	enigma = encoder.Initialize(enigma, "ZDU")
 
 	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be CPQZG)")
+
+    settings.RingSettings = []int{2,2,2}
+    enigma = encoder.Setup(settings)
+    enigma = encoder.Initialize(enigma, "AAA")
+    fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be EWTYX)")
 }
