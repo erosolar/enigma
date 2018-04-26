@@ -2,10 +2,13 @@ package encoder
 
 import "strings"
 
+const idxA = 65
+
 // Setup returns an enigma object set with the given settings
 // including which rotors to use, how they are setup, and the plugboard settings
 func Setup(settings Settings) Enigma {
 	enig := Enigma{}
+	// rotors
 	enig.rotors = make([]rotor, 0)
 	rotors := settings.RotorOrder
 	for idx, rnum := range rotors {
@@ -16,15 +19,32 @@ func Setup(settings Settings) Enigma {
 		}
 
 		sub := rotorSubs[rnum-1]
+		sub = sub[len(sub)-(rstg-1):len(sub)] + sub[0:len(sub)-(rstg-1)]
+
+		newSub := make([]rune, 0, 26)
+		for _, r := range sub {
+			newSub = append(newSub, incRune(r, rstg-1))
+		}
 
 		enig.rotors = append(enig.rotors, rotor{
-			substitution: sub[len(sub)-(rstg-1):len(sub)] + sub[0:len(sub)-(rstg-1)],
+			substitution: string(newSub),
 			turnover:     rotorTurn[rnum-1],
 			currPos:      0,
 		})
 
 	}
 	enig.reflector = settings.Reflector
+	// plugboard
+	if len(settings.Plugs) != 0 {
+		plugboard := []rune(alphabet)
+		for _, plug := range strings.Split(settings.Plugs, " ") {
+			plugboard[rune(plug[0])-idxA] = rune(plug[1])
+			plugboard[rune(plug[1])-idxA] = rune(plug[0])
+		}
+		enig.plugboard = string(plugboard)
+	} else {
+		enig.plugboard = alphabet
+	}
 	return enig
 }
 
@@ -55,7 +75,7 @@ func (e *Enigma) encryptLetter(startingLetter rune) byte {
 	// First pass through rotors
 	e.stepRotors()
 
-	currIndex = strings.IndexByte(alphabet, startingLetter)
+	currIndex = strings.IndexByte(alphabet, letter)
 	for i := 2; i >= 0; i-- {
 		currIndex = mod26(currIndex + e.rotors[i].currPos)
 		letter = e.rotors[i].substitution[currIndex]
@@ -74,6 +94,8 @@ func (e *Enigma) encryptLetter(startingLetter rune) byte {
 		letter = alphabet[currIndex]
 	}
 
+	// back through plugboard
+	letter = e.plugboard[strings.IndexByte(alphabet, letter)]
 	return letter
 }
 
@@ -93,4 +115,8 @@ func mod26(x int) int {
 		return x + 26
 	}
 	return x
+}
+
+func incRune(r rune, i int) rune {
+	return rune(alphabet[mod26(strings.IndexRune(alphabet, r)+i)])
 }

@@ -16,8 +16,8 @@ type navalRotor struct {
 type Settings struct {
 	RotorOrder   []int
 	RingSettings []int
-	// Plugs        [][2]rune
-	Reflector string
+	Plugs        string
+	Reflector    string
 }
 
 type Enigma struct {
