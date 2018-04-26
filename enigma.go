@@ -53,7 +53,7 @@ func main() {
 	enigma = encoder.Setup(settings)
 
 	for {
-		fmt.Println("encode or decode?")
+		fmt.Println("ENCODE or DECODE?")
 		text, _ = reader.ReadString('\n')
 		if text == "EXIT\n" {
 			return
