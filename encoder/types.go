@@ -18,7 +18,7 @@ type Settings struct {
 	RotorOrder   []int
 	RingSettings []int
 	// Plugs        [][2]rune
-	Reflector    string
+	Reflector string
 }
 
 type Enigma struct {

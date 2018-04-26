@@ -1,30 +1,30 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 
-    "github.mit.edu/erosolar/enigma/encoder"
+	"github.mit.edu/erosolar/enigma/encoder"
 )
 
 func main() {
-	fmt.Printf("Welcome to Enigma.\n");
+	fmt.Printf("Welcome to Enigma.\n")
 
-    settings := encoder.Settings {
-        []int{1,2,3},
-        []int{1,1,1},
-        encoder.UKWB,
-    };
+	settings := encoder.Settings{
+		[]int{1, 2, 3},
+		[]int{1, 1, 1},
+		encoder.UKWB,
+	}
 
-    enigma := encoder.Setup(settings);
-    enigma = encoder.Initialize(enigma, "AAA");
+	enigma := encoder.Setup(settings)
+	enigma = encoder.Initialize(enigma, "AAA")
 
-    fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be BDZGO)");
+	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be BDZGO)")
 
-    enigma = encoder.Initialize(enigma, "ADU");
+	enigma = encoder.Initialize(enigma, "ADU")
 
-    fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be EQIBM)");
+	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be EQIBM)")
 
-    enigma = encoder.Initialize(enigma, "ZDU");
+	enigma = encoder.Initialize(enigma, "ZDU")
 
-    fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be CPQZG)");
+	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be CPQZG)")
 }
