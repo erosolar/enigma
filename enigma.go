@@ -1,51 +1,100 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.mit.edu/erosolar/enigma/encoder"
 )
 
+var enigma encoder.Enigma
+var reader *bufio.Reader
+
 func main() {
 	fmt.Printf("Welcome to Enigma.\n")
+	settings := encoder.Settings{}
 
-	settings := encoder.Settings{
-		RotorOrder:   []int{1, 2, 3},
-		RingSettings: []int{1, 1, 1},
-		Plugs:        "",
-		Reflector:    encoder.UKWB,
+	reader = bufio.NewReader(os.Stdin)
+	fmt.Print("Enter today's rotor settings (eg. 1 2 3): ")
+	text, _ := reader.ReadString('\n')
+	settings.RotorOrder = make([]int, 0, 3)
+	fmt.Println(text)
+	for _, num := range strings.Split(text[0:len(text)-1], " ") {
+		if num != "" {
+			fmt.Println(text)
+			i, err := strconv.Atoi(num)
+			if err != nil {
+				panic(err)
+			}
+			settings.RotorOrder = append(settings.RotorOrder, i)
+		}
 	}
 
-	enigma := encoder.Setup(settings)
-	enigma = encoder.Initialize(enigma, "AAA")
+	fmt.Print("Enter today's ring settings (eg. 01 24 03): ")
+	text, _ = reader.ReadString('\n')
+	settings.RingSettings = make([]int, 0, 3)
+	for _, num := range strings.Split(text[0:len(text)-1], " ") {
+		if num != "" {
+			i, err := strconv.Atoi(num)
+			if err != nil {
+				panic(err)
+			}
+			settings.RingSettings = append(settings.RingSettings, i)
+		}
+	}
 
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be BDZGO)")
+	fmt.Print("Enter today's plug pairs (eg. GP XH TW IA ...): ")
+	text, _ = reader.ReadString('\n')
+	settings.Plugs = text[0 : len(text)-1]
 
-	enigma = encoder.Initialize(enigma, "ADU")
+	settings.Reflector = encoder.UKWB
 
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be EQIBM)")
-
-	enigma = encoder.Initialize(enigma, "ZDU")
-
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be CPQZG)")
-
-	fmt.Println("WITH RING SETTINGS BBB")
-	settings.RingSettings = []int{2, 2, 2}
 	enigma = encoder.Setup(settings)
-	enigma = encoder.Initialize(enigma, "AAA")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be EWTYX)")
-	enigma = encoder.Initialize(enigma, "ADU")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be ECQEZ)")
-	enigma = encoder.Initialize(enigma, "ZDU")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be QQPSG)")
-	fmt.Println("WITH RING SETTINGS BBB and plugboard 'PO ML IU KJ NH YT GB VF RE DC'")
-	settings.RingSettings = []int{2, 2, 2}
-	settings.Plugs = "PO ML IU KJ NH YT GB VF RE DC"
-	enigma = encoder.Setup(settings)
-	enigma = encoder.Initialize(enigma, "AAA")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be RWYTX)")
-	enigma = encoder.Initialize(enigma, "ADU")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be RDQRZ)")
-	enigma = encoder.Initialize(enigma, "ZDU")
-	fmt.Println("Encryption of 'AAAAA' is", enigma.Encrypt("AAAAA"), "(should be QQOSB)")
+
+	for {
+		fmt.Println("encode or decode?")
+		text, _ = reader.ReadString('\n')
+		if text == "EXIT\n" {
+			return
+		} else if text[0] == 'E' {
+			encrypt()
+		} else {
+			decrypt()
+		}
+	}
+}
+
+func encrypt() {
+	fmt.Print("enter key: ")
+	key, _ := reader.ReadString('\n')
+	enigma = encoder.Initialize(enigma, key[0:3])
+	fmt.Print("enter key2: ")
+	key2, _ := reader.ReadString('\n')
+	output := enigma.Encrypt(key2[0:3] + key2[0:3])
+
+	enigma = encoder.Initialize(enigma, key2[0:3])
+	fmt.Println("enter message below")
+	text, _ := reader.ReadString('\n')
+	fmt.Println("encrypted message:")
+	output += enigma.Encrypt(text[0 : len(text)-1])
+	fmt.Println(output)
+}
+
+func decrypt() {
+	fmt.Print("enter key: ")
+	key, _ := reader.ReadString('\n')
+	enigma = encoder.Initialize(enigma, key[0:3])
+	fmt.Println("enter ciphertext below")
+	text, _ := reader.ReadString('\n')
+	if len(text) < 6 {
+		fmt.Println("ciphertext must be at least 6ch long")
+		return
+	}
+	key2 := enigma.Encrypt(text[0:3])
+	enigma = encoder.Initialize(enigma, key2)
+	fmt.Println(enigma.Encrypt(text[6 : len(text)-1]))
+
 }
