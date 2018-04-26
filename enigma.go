@@ -59,8 +59,10 @@ func main() {
 			return
 		} else if text[0] == 'E' {
 			encrypt()
-		} else {
+		} else if text[0] == 'D' {
 			decrypt()
+		} else {
+			fmt.Println("enter \"ENCODE\" or \"DECODE\" please!")
 		}
 	}
 }
