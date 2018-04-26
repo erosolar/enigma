@@ -48,13 +48,14 @@ func (e *Enigma) Encrypt(s string) string {
 }
 
 func (e *Enigma) encryptLetter(startingLetter rune) byte {
-	// TODO plugboard
+	// Plugboard
+	currIndex := strings.IndexRune(alphabet, startingLetter)
+	letter := e.plugboard[currIndex]
 
 	// First pass through rotors
 	e.stepRotors()
 
-	var letter byte
-	currIndex := strings.IndexRune(alphabet, startingLetter)
+	currIndex = strings.IndexByte(alphabet, startingLetter)
 	for i := 2; i >= 0; i-- {
 		currIndex = mod26(currIndex + e.rotors[i].currPos)
 		letter = e.rotors[i].substitution[currIndex]
