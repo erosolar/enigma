@@ -66,10 +66,10 @@ func main() {
 }
 
 func encrypt() {
-	fmt.Print("enter key: ")
+	fmt.Print("enter outer key: ")
 	key, _ := reader.ReadString('\n')
 	enigma = encoder.Initialize(enigma, key[0:3])
-	fmt.Print("enter key2: ")
+	fmt.Print("enter inner key: ")
 	key2, _ := reader.ReadString('\n')
 	output := enigma.Encrypt(key2[0:3] + key2[0:3])
 
@@ -82,7 +82,7 @@ func encrypt() {
 }
 
 func decrypt() {
-	fmt.Print("enter key: ")
+	fmt.Print("enter (outer) key: ")
 	key, _ := reader.ReadString('\n')
 	enigma = encoder.Initialize(enigma, key[0:3])
 	fmt.Println("enter ciphertext below")
