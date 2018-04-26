@@ -21,10 +21,8 @@ func main() {
 	fmt.Print("Enter today's rotor settings (eg. 1 2 3): ")
 	text, _ := reader.ReadString('\n')
 	settings.RotorOrder = make([]int, 0, 3)
-	fmt.Println(text)
 	for _, num := range strings.Split(text[0:len(text)-1], " ") {
 		if num != "" {
-			fmt.Println(text)
 			i, err := strconv.Atoi(num)
 			if err != nil {
 				panic(err)
