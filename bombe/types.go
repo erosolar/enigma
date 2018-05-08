@@ -24,3 +24,11 @@ type connection struct {
 type enigma struct {
 	rotors [][26]int // substitutions of rotors used
 }
+
+// Result defines the result type (a possible setting)
+type Result struct {
+	Offset    int
+	Rotors    []int
+	Printable string
+	State     map[int]map[int]bool
+}

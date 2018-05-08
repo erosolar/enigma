@@ -21,16 +21,24 @@ func Setup(settings Settings) Bombe {
 // Run runs the bombe with a given starting guess
 // pt: the node you want to give a starting guess for
 // plugboard: the guess for the node
-func (b Bombe) Run(pt, plugboard rune) {
+func (b Bombe) Run(pt, plugboard rune, resultChan chan Result, doneChan chan bool) {
 	for offset := 0; offset < 26*26*26; offset++ {
 		b.makeSystem(offset)
 		b.initialize(pt, plugboard)
 		b.findSteadyState(pt)
+		if offset%(26*26) == 0 {
+			fmt.Printf(".")
+		}
 		if testOutput(b.state) {
-			fmt.Printf("offset: %v\n", offset)
-			fmt.Println(formatOutput(b.state))
+			resultChan <- Result{
+				Offset:    offset,
+				Rotors:    b.settings.RotorOrder,
+				Printable: formatOutput(b.state),
+				State:     b.state,
+			}
 		}
 	}
+	doneChan <- true
 }
 
 // assumes initial offset of 0
@@ -97,6 +105,13 @@ func (b *Bombe) findSteadyState(start rune) {
 				}
 			}
 		}
+		var newNodes []int
+		newNodes, b.state = diagonalBoard(b.state)
+		for _, node := range newNodes {
+			if !exists(node, queue) {
+				queue = append(queue, node)
+			}
+		}
 	}
 }
 
@@ -159,6 +174,26 @@ func same(map1, map2 map[int]bool) bool {
 		}
 	}
 	return true
+}
+
+func diagonalBoard(state map[int]map[int]bool) ([]int, map[int]map[int]bool) {
+	out := make(map[int]map[int]bool, len(state))
+	toCheck := make([]int, 0)
+	for k, v := range state {
+		out[k] = make(map[int]bool, len(v))
+	}
+	for k, v := range state {
+		for k2 := range v {
+			out[k][k2] = true
+			if _, ok := state[k2]; ok {
+				if _, ok := state[k2][k]; !ok {
+					out[k2][k] = true
+					toCheck = append(toCheck, k2)
+				}
+			}
+		}
+	}
+	return toCheck, out
 }
 
 // letters go in the top rotor, through each rotor, through the ukw, then back

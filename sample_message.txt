@@ -1,0 +1,21 @@
+AUFKL XABTE ILUNG XVONX KURTI NOWAX KURTI NOWAX NORDW ESTLX SEBEZ XSEBE ZXUAF FLIEG ERSTR ASZER IQTUN GXDUB ROWKI XDUBR OWKIX OPOTS CHKAX OPOTS CHKAX UMXEI NSAQT DREIN ULLXU HRANG ETRET ENXAN GRIFF XINFX RGTX
+EDPUD NRGYS ZRCXN UYTPO MRMBO FKTBZ REZKM LXLVE FGUEY SIOZV EQMIK UBPMM YLKLT TDEIS MDICA GYKUA CTCDO MOHWX MUUIA UBSTS LRNBZ SZWNR FXWFY SSXJZ VIJHI DISHP RKLKA YUPAD TXQSP INQMA TLPIF SVKDA SCTAC DPBOP VHJK
+12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890 12345 67890
+0           1           2           3           4           5           6           7           8           9           10          11          12          13          14          15          16          17
+
+
+menu:       C
+            |13
+        4   |   2       5       12      7       1       10
+    K ----- U ----- D ----- L ----- R ----- A ----- E ----- S
+            |16
+            |   6       15      8
+            X ----- N ----- G ----- B
+              -----
+               14
+
+settings
+rotors: 2  4  5
+rings:  2 21 12
+key:    B  L  A
+
