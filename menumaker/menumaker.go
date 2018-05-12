@@ -2,7 +2,7 @@ package menumaker
 
 import "strconv"
 
-func CreateMenus(input, crib string) []Menu {
+func MakeMenus(input, crib string) []Menu {
 	var menus []Menu
 	// check every possible place the crib could be
 	for i := 0; i <= len(input)-len(crib); i++ {
