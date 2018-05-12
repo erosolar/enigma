@@ -27,6 +27,16 @@ func Test(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "WSNPNLKLSTCS",
+			crib:  "ATTACKATDAWN",
+			result: []Menu{
+				Menu{
+					Connections: []string{"WA0", "ST1", "NT2", "PA3", "NC4", "LK5", "KA6", "LT7", "SD8", "TA9", "CW10", "SN11"},
+					NumLetters:  10,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
