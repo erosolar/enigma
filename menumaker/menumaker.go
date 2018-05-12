@@ -30,7 +30,7 @@ func makeMenu(input, crib string) (bool, Menu) {
 }
 
 func (m *Menu) addConnection(a rune, b byte, pos int) {
-	connectionString := string(a) + string(b) + strconv.Itoa(pos)
+	connectionString := string(a) + string(b) + strconv.Itoa(pos+1)
 	m.Connections = append(m.Connections, connectionString)
 
 	for _, l := range []byte{byte(a), b} {

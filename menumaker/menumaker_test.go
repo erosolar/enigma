@@ -14,15 +14,15 @@ func Test(t *testing.T) {
 			crib:  "HI",
 			result: []Menu{
 				Menu{
-					Connections: []string{"EH0", "LI1"},
+					Connections: []string{"EH1", "LI2"},
 					NumLetters:  4,
 				},
 				Menu{
-					Connections: []string{"LH0", "LI1"},
+					Connections: []string{"LH1", "LI2"},
 					NumLetters:  3,
 				},
 				Menu{
-					Connections: []string{"LH0", "OI1"},
+					Connections: []string{"LH1", "OI2"},
 					NumLetters:  4,
 				},
 			},
@@ -32,7 +32,7 @@ func Test(t *testing.T) {
 			crib:  "ATTACKATDAWN",
 			result: []Menu{
 				Menu{
-					Connections: []string{"WA0", "ST1", "NT2", "PA3", "NC4", "LK5", "KA6", "LT7", "SD8", "TA9", "CW10", "SN11"},
+					Connections: []string{"WA1", "ST2", "NT3", "PA4", "NC5", "LK6", "KA7", "LT8", "SD9", "TA10", "CW11", "SN12"},
 					NumLetters:  10,
 				},
 			},
