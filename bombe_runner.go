@@ -1,6 +1,7 @@
 package main
 
 import "github.mit.edu/erosolar/enigma/bombe"
+import "github.mit.edu/erosolar/enigma/checker"
 import "fmt"
 
 var bombes []bombe.Bombe
@@ -38,19 +39,28 @@ func main() {
 
 	doneThreads := 0
 	results := make([]bombe.Result, 0)
+R:
 	for {
 		select {
 		case res := <-ch:
-			fmt.Println()
-			fmt.Printf("offset: %v; rotors: %v\n", res.Offset, res.Rotors)
-			fmt.Println(res.Printable)
+			fmt.Print("*")
 			results = append(results, res)
 		case <-doneCh:
 			doneThreads++
 			if doneThreads == 60 { // 60 rotor orders -> 60 bombes in parallel
-				fmt.Println(results)
-				return
+				fmt.Println()
+				fmt.Println("Received all results")
+				break R
 			}
+		}
+	}
+
+	// now for the human checking
+	for _, res := range results {
+		if checker.CheckIfPossiblePlugboard(res.State) {
+			fmt.Println()
+			fmt.Printf("offset: %v; rotors: %v\n", res.Offset, res.Rotors)
+			fmt.Println(res.Printable)
 		}
 	}
 }
