@@ -26,12 +26,11 @@ func main() {
 	fmt.Print("Enter the file name for today's messages: ")
 	messageFileName, _ := reader.ReadString('\n')
 	messageFileName = strings.TrimSpace(messageFileName)
-	
+
 	messages, err := readMessageFile(messageFileName)
 	for err != nil {
 		fmt.Print("Error reading file ", messageFileName, ", please enter it in again: ")
 		messageFileName, _ := reader.ReadString('\n')
-		messageFileName = strings.TrimSpace(messageFileName)
 		messages, err = readMessageFile(messageFileName)
 	}
 
@@ -127,7 +126,7 @@ func startBombe(menuChan chan menumaker.Menu, resultChan chan bombe.Result, kill
 	for {
 		select {
 		case m := <-menuChan:
-		     runBombe(m, resultChan, killChan)
+			runBombe(m, resultChan, killChan)
 		case <-killChan:
 			return
 		}
@@ -135,13 +134,21 @@ func startBombe(menuChan chan menumaker.Menu, resultChan chan bombe.Result, kill
 }
 
 func runBombe(menu menumaker.Menu, resultChan chan bombe.Result, killChan chan bool) {
-     // TODO
+	settings := bombe.Settings{
+		Connections: menu.Connections,
+		NumEnigmas:  len(menu.Connections),
+		NumLetters:  menu.NumLetters,
+	}
+	go bombe.GetResults(settings, 3, resultChan, killChan)
 }
 
 func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killChan chan bool) {
 	for {
 		select {
-		case r := <-resultChan:
+		case r, ok := <-resultChan:
+			if !ok {
+				return
+			}
 			if checker.CheckIfPossiblePlugboard(r.State) {
 				go func(r bombe.Result, userChan chan bombe.Result, killChan chan bool) {
 					select {

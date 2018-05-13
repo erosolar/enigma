@@ -93,24 +93,6 @@ func TestMakeSystem(t *testing.T) {
 	}
 }
 
-func TestInitialize(t *testing.T) {
-	fmt.Println("initializing bombe system...")
-	settings := Settings{
-		RotorOrder:  []int{1, 2, 3},
-		NumEnigmas:  2,
-		NumLetters:  3,
-		Connections: []string{"AB2", "AC12"},
-	}
-
-	bombe := Setup(settings)
-	bombe.makeSystem(0)
-	bombe.initialize('A', 'C')
-	t.Log("bombe state for 'a' should have 'c' in it")
-	if bombe.state[0][2] != true {
-		t.Fail()
-	}
-}
-
 func TestEncryptLetter(t *testing.T) {
 	settings := Settings{
 		RotorOrder:  []int{3, 2, 1},
@@ -159,7 +141,5 @@ func TestFindSteadyState(t *testing.T) {
 
 	bombe := Setup(settings)
 	bombe.makeSystem(0)
-	bombe.initialize('A', 'A')
-	bombe.Run('A', 'A')
-
+	bombe.initialize()
 }

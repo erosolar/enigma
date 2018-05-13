@@ -10,7 +10,7 @@ import "time"
 // nthreads is how many threads to run in parallel
 // resChan will be closed once there are no more results
 // IMPORTANT: this function is intended to be run as a goroutine!!!
-func GetResults(settings Settings, nThreads int, resChan chan Result) {
+func GetResults(settings Settings, nThreads int, resChan chan Result, killCh chan bool) {
 	var bombes []Bombe
 	if settings.RotorOrder != nil {
 		bombes = make([]Bombe, 0, 1)
@@ -49,6 +49,10 @@ R:
 				fmt.Println()
 				fmt.Println("Received all results")
 				fmt.Printf("bombes took: %s\n", time.Since(start))
+				break R
+			}
+		case _, ok := <-killCh:
+			if !ok {
 				break R
 			}
 		}
