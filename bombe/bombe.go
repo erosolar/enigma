@@ -2,6 +2,72 @@ package bombe
 
 import "strconv"
 import "fmt"
+import "time"
+
+//GetResults takes in a settings object
+// if RotorOrder is set, does that rotor order
+// else, tries all possible rotor orders
+// nthreads is how many threads to run in parallel
+// resChan will be closed once there are no more results
+// IMPORTANT: this function is intended to be run as a goroutine!!!
+func GetResults(settings Settings, nThreads int, resChan chan Result) {
+	var bombes []Bombe
+	if settings.RotorOrder != nil {
+		bombes = make([]Bombe, 0, 1)
+		bombes[0] = Setup(settings)
+	} else {
+		bombes = make([]Bombe, 0, len(rotorOrders))
+		for _, r := range rotorOrders {
+			settings.RotorOrder = r
+			bombes = append(bombes, Setup(settings))
+		}
+	}
+	fmt.Printf("Running %d parallel threads on %d bombes\n", nThreads, len(bombes))
+	start := time.Now()
+	jobs := make(chan Bombe, nThreads)
+	ch := make(chan Result, 12)
+	doneCh := make(chan bool)
+	for i := 0; i < nThreads; i++ {
+		go threadRun(jobs, ch, doneCh)
+	}
+
+	doneThreads := 0
+	go func() {
+		for _, b := range bombes {
+			jobs <- b
+		}
+	}()
+R:
+	for {
+		select {
+		case res := <-ch:
+			fmt.Print("*")
+			resChan <- res
+		case <-doneCh:
+			doneThreads++
+			if doneThreads == nThreads {
+				fmt.Println()
+				fmt.Println("Received all results")
+				fmt.Printf("bombes took: %s\n", time.Since(start))
+				break R
+			}
+		}
+	}
+	close(resChan)
+}
+
+func threadRun(jobCh chan Bombe, resultCh chan Result, doneCh chan bool) {
+	done := make(chan bool)
+	for {
+		select {
+		case b := <-jobCh:
+			b.Run(resultCh, done)
+		case <-time.After(time.Second):
+			doneCh <- true
+			return
+		}
+	}
+}
 
 // Setup initializes the Bombe to have the provided rotors and connections
 func Setup(settings Settings) Bombe {
@@ -21,10 +87,10 @@ func Setup(settings Settings) Bombe {
 // Run runs the bombe with a given starting guess
 // pt: the node you want to give a starting guess for
 // plugboard: the guess for the node
-func (b Bombe) Run(pt, plugboard rune, resultChan chan Result, doneChan chan bool) {
+func (b Bombe) Run(resultChan chan Result, doneChan chan bool) {
 	for offset := 0; offset < 26*26*26; offset++ {
 		b.makeSystem(offset)
-		b.initialize(pt, plugboard)
+		pt := b.initialize()
 		b.findSteadyState(pt)
 		if offset%(26*26) == 0 {
 			fmt.Printf(".")
@@ -38,7 +104,6 @@ func (b Bombe) Run(pt, plugboard rune, resultChan chan Result, doneChan chan boo
 			}
 		}
 	}
-	doneChan <- true
 }
 
 // assumes initial offset of 0
@@ -77,14 +142,17 @@ func (b *Bombe) makeSystem(offset int) {
 	b.state = state
 }
 
-func (b *Bombe) initialize(pt, ct rune) {
-	ptInt := int(pt - 'A')
-	ctInt := int(ct - 'A')
-	b.state[ptInt][ctInt] = true
+func (b *Bombe) initialize() int {
+	// v janky :/
+	for k := range b.state {
+		b.state[k][k] = true
+		return k
+	}
+	panic("nothing in state!!!")
 }
 
-func (b *Bombe) findSteadyState(start rune) {
-	queue := []int{int(start - 'A')}
+func (b *Bombe) findSteadyState(start int) {
+	queue := []int{start}
 	for len(queue) > 0 {
 		elem := queue[0]
 		queue = queue[1:]
