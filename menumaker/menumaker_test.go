@@ -10,37 +10,29 @@ func Test(t *testing.T) {
 		result []Menu
 	}{
 		{
-			input: "HELLO",
-			crib:  "HI",
-			result: []Menu{
-				Menu{
-					Connections: []string{"EH1", "LI2"},
-					NumLetters:  4,
-				},
-				Menu{
-					Connections: []string{"LH1", "LI2"},
-					NumLetters:  3,
-				},
-				Menu{
-					Connections: []string{"LH1", "OI2"},
-					NumLetters:  4,
-				},
-			},
-		},
-		{
 			input: "WSNPNLKLSTCS",
 			crib:  "ATTACKATDAWN",
 			result: []Menu{
 				Menu{
-					Connections: []string{"WA1", "ST2", "NT3", "PA4", "NC5", "LK6", "KA7", "LT8", "SD9", "TA10", "CW11", "SN12"},
+					Connections: []string{"AW1", "ST2", "NT3", "AP4", "CN5", "KL6", "AK7", "LT8", "DS9", "AT10", "CW11", "NS12"},
 					NumLetters:  10,
+				},
+			},
+		},
+		{
+			input: "QFZWRWIVTYRESXBFOGKUHQBAISEZ",
+			crib:  "WETTERVORHERSAGEBISKAYA",
+			result: []Menu{
+				Menu{
+					Connections: []string{"HX10", "BH17", "BS19", "BE11", "SY22", "RS9", "OS13", "RY6", "FR12", "RV7", "RW1", "EW2", "EO8", "AE23", "ET5", "EU16", "AG14", "AK20", "GK15", "AI21", "IQ18", "IT3", "TV4"},
+					NumLetters:  18,
 				},
 			},
 		},
 	}
 
 	for _, test := range tests {
-		m := CreateMenus(test.input, test.crib)
+		m := MakeMenus(test.input, test.crib)
 		if !testEqualMenus(m, test.result) {
 			t.Error("Expected menu", test.result, "but got", m)
 		}

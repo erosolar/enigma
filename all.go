@@ -31,6 +31,7 @@ func main() {
 	for err != nil {
 		fmt.Print("Error reading file ", messageFileName, ", please enter it in again: ")
 		messageFileName, _ := reader.ReadString('\n')
+		messageFileName = strings.TrimSpace(messageFileName)
 		messages, err = readMessageFile(messageFileName)
 	}
 
