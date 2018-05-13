@@ -153,7 +153,7 @@ func runBombe(menu menumaker.Menu, resultChan chan bombe.Result, killChan chan b
 		NumEnigmas:  len(menu.Connections),
 		NumLetters:  menu.NumLetters,
 	}
-	go bombe.GetResults(settings, 3, resultChan, killChan)
+	bombe.GetResults(settings, 3, resultChan, killChan)
 }
 
 func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killChan chan bool) {
