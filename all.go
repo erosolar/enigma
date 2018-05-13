@@ -111,8 +111,8 @@ func readMessageFile(fileName string) ([]Message, error) {
 func makeMessage(input string) Message {
 	return Message{
 		plaintextKey: input[0:3],
-		encryptedKey: input[3:9],
-		message:      input[9:len(input)],
+		encryptedKey: input[3:6],
+		message:      strings.Replace(input[6:len(input)], " ", "", -1),
 	}
 }
 
