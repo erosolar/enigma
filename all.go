@@ -10,6 +10,7 @@ import (
 
 	"github.mit.edu/erosolar/enigma/bombe"
 	"github.mit.edu/erosolar/enigma/checker"
+	"github.mit.edu/erosolar/enigma/encoder"
 	"github.mit.edu/erosolar/enigma/menumaker"
 )
 
@@ -57,6 +58,19 @@ func main() {
 		case res := <-userChan:
 			fmt.Printf("\nPossible settings -- offset: %v; rotors: %v\n", res.Offset, res.Rotors)
 			fmt.Println(res.Printable)
+
+			possibleSettings := encoder.Settings{
+				RotorOrder:   []int{res.Rotors[2], res.Rotors[1], res.Rotors[0]},
+				RingSettings: []int{1, 1, 1},
+				Plugs:        checker.GetPlugs(res.State),
+				Reflector:    encoder.UKWB,
+			}
+			enig := encoder.Setup(possibleSettings)
+			key := makeKey(res.Offset)
+			for _, m := range messages {
+				enig = encoder.Initialize(enig, key)
+				fmt.Println(enig.Encrypt(m.message))
+			}
 			// TODO interact with user to figure out turnover/if it's a good setting
 			// if we found today's settings
 			fmt.Print("Exit? (y/n) ")
@@ -161,4 +175,12 @@ func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killCh
 			return
 		}
 	}
+}
+
+func makeKey(offset int) string {
+	high := offset / (26 * 26)
+	med := (offset / 26) % 26
+	low := offset % 26
+
+	return string([]rune{rune(high + 'A'), rune(med + 'A'), rune(low + 'A')})
 }
