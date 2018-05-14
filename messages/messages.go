@@ -59,8 +59,11 @@ func readFile(fileName string) ([]string, error) {
 			startEncrypting = true
 			continue
 		}
-		if startEncrypting && text != "" {
-			messages = append(messages, makeMessage(text))
+		if startEncrypting {
+			m := makeMessage(text)
+			if m != "" {
+				messages = append(messages, m)
+			}
 		}
 	}
 
@@ -101,7 +104,7 @@ func encryptAndWriteToFile(messages []string, fileName string, settings encoder.
 	defer file.Close()
 
 	// just so it's different
-	rand.Seed(int64(settings.RotorOrder[0] + settings.RingSettings[2]))
+	rand.Seed(int64(settings.RotorOrder[0] + settings.RingSettings[2]) + int64(messages[0][0]))
 	enigma = encoder.Setup(settings)
 
 	w := bufio.NewWriter(file)
@@ -132,7 +135,7 @@ func encryptMessage(s string) string {
 		encryptedMsg += output[i:i+5] + " "
 	}
 
-	return outerKey + " " + encryptedMsg[0:len(encryptedMsg)]
+	return outerKey + " " + encryptedMsg[0:len(encryptedMsg)-1]
 }
 
 func randomKey() string {

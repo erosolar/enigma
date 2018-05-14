@@ -1,5 +1,0 @@
-Hello I am a simple sample message. This is constructed so we can have an easy
-testable message for message encryption. Let's see how the message maker does
-with things like: "quotes" and semicolons; and lovely dashes--and maybe even
-exclamation points! Well this seems like a pretty good sample message so far so
-let's do this!

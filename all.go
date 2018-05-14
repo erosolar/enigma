@@ -113,16 +113,15 @@ func makeMenus(messages []message, crib string, menuChan chan bombeMessage, kill
 		menus := menumaker.MakeMenus(msg.message, crib)
 		for _, m := range menus {
 			if m.NumLetters > 10 {
-				func(msg string, menu menumaker.Menu, menuChan chan bombeMessage, killChan chan bool) {
-					select {
-					case menuChan <- bombeMessage{msg, m}:
-					case <-killChan:
-					}
-				}(msg.message, m, menuChan, killChan)
+				select {
+				case menuChan <- bombeMessage{msg.message, m}:
+				case <-killChan:
+				}
 			}
 		}
 	}
 	close(menuChan)
+	fmt.Print("\u22EE")
 }
 
 func startBombes(numBombes int, menuChan chan bombeMessage, resultChan chan bombe.Result, killChan chan bool) {
@@ -134,6 +133,7 @@ func startBombes(numBombes int, menuChan chan bombeMessage, resultChan chan bomb
 		<-doneChan
 	}
 	close(resultChan)
+	fmt.Print("\u22EE")
 }
 
 func startBombe(menuChan chan bombeMessage, resultChan chan bombe.Result, doneChan chan bool, killChan chan bool) {
@@ -166,15 +166,14 @@ func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killCh
 		case r, ok := <-resultChan:
 			if !ok {
 				close(userChan)
+				fmt.Print("\u22EE")
 				return
 			}
 			if checker.CheckIfPossiblePlugboard(r.State) {
-				func(r bombe.Result, userChan chan bombe.Result, killChan chan bool) {
-					select {
-					case userChan <- r:
-					case <-killChan:
-					}
-				}(r, userChan, killChan)
+				select {
+				case userChan <- r:
+				case <-killChan:
+				}
 			}
 		case <-killChan:
 			return
