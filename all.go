@@ -113,7 +113,7 @@ func makeMenus(messages []message, crib string, menuChan chan bombeMessage, kill
 		menus := menumaker.MakeMenus(msg.message, crib)
 		for _, m := range menus {
 			if m.NumLetters > 10 {
-				go func(msg string, menu menumaker.Menu, menuChan chan bombeMessage, killChan chan bool) {
+				func(msg string, menu menumaker.Menu, menuChan chan bombeMessage, killChan chan bool) {
 					select {
 					case menuChan <- bombeMessage{msg, m}:
 					case <-killChan:
@@ -169,7 +169,7 @@ func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killCh
 				return
 			}
 			if checker.CheckIfPossiblePlugboard(r.State) {
-				go func(r bombe.Result, userChan chan bombe.Result, killChan chan bool) {
+				func(r bombe.Result, userChan chan bombe.Result, killChan chan bool) {
 					select {
 					case userChan <- r:
 					case <-killChan:
