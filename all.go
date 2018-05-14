@@ -170,7 +170,8 @@ func runChecker(resultChan chan bombe.Result, userChan chan bombe.Result, killCh
 				fmt.Print("\u22EE")
 				return
 			}
-			if checker.CheckIfPossiblePlugboard(r.State) {
+			if pb, ok := checker.CheckIfPossiblePlugboard(r.State); ok {
+				r.Plugboard = pb
 				select {
 				case userChan <- r:
 				case <-killChan:
@@ -200,9 +201,6 @@ func processResults(results []bombe.Result) {
 			sorted[stringify(res.Rotors)] = []bombe.Result{res}
 		}
 	}
-
-	fmt.Println("Rotor orders 5 1 2")
-	fmt.Println(sorted["512"])
 
 	reader := bufio.NewReader(os.Stdin)
 	for rotors, res := range sorted {
@@ -239,7 +237,7 @@ func combineSteckers(results []bombe.Result) []string {
 	out := make([]string, 0) // stecker lists
 	for _, r := range results {
 		inserted := false
-		steckers := checker.GetPlugs(r.State)
+		steckers := r.Plugboard
 		for i, l := range out {
 			if comb, ok := validCombination(steckers, l); ok {
 				inserted = true
@@ -267,11 +265,7 @@ func validCombination(l1, l2 string) (string, bool) {
 		}
 		state[int(pair[0]-'A')][int(pair[1]-'A')] = true
 	}
-	isValid := checker.CheckIfPossiblePlugboard(state)
-	if isValid {
-		return checker.GetPlugs(state), isValid
-	}
-	return "", isValid
+	return checker.CheckIfPossiblePlugboard(state)
 }
 
 func stringify(l []int) string {

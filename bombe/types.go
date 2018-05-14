@@ -32,4 +32,5 @@ type Result struct {
 	Printable string
 	State     map[int]map[int]bool
 	Message   string
+	Plugboard string
 }
