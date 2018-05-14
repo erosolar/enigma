@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.mit.edu/erosolar/enigma/bombe"
 	"github.mit.edu/erosolar/enigma/checker"
@@ -57,8 +56,6 @@ func main() {
 	go startBombes(numBombes, menuChan, resultChan, killChan)
 	go runChecker(resultChan, userChan, killChan)
 
-	timer := time.After(time.Second)
-
 	results := []bombe.Result{}
 
 L:
@@ -68,11 +65,9 @@ L:
 			if !ok {
 				break L
 			}
-			results = append(results, res)
-		case <-timer:
 			notes := []string{"\u2669", "\u266A", "\u266B", "\u266C"}
 			fmt.Print(notes[rand.Intn(4)], " ")
-			timer = time.After(time.Second)
+			results = append(results, res)
 		}
 	}
 
