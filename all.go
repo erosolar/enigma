@@ -10,6 +10,7 @@ import (
 
 	"github.mit.edu/erosolar/enigma/bombe"
 	"github.mit.edu/erosolar/enigma/checker"
+	"github.mit.edu/erosolar/enigma/encoder"
 	"github.mit.edu/erosolar/enigma/menumaker"
 )
 
@@ -202,6 +203,75 @@ func processResults(results []bombe.Result) {
 
 	fmt.Println("Rotor orders 5 1 2")
 	fmt.Println(sorted["512"])
+
+	reader := bufio.NewReader(os.Stdin)
+	for rotors, res := range sorted {
+		steckerOpts := combineSteckers(res)
+		for _, st := range steckerOpts {
+			settings := encoder.Settings{
+				RotorOrder:   []int{res[0].Rotors[2], res[0].Rotors[1], res[0].Rotors[0]}, // reversed >.>
+				RingSettings: []int{1, 1, 1},                                              //assume ignored
+				Plugs:        st,
+				Reflector:    encoder.UKWB,
+			}
+			enig := encoder.Setup(settings)
+			fmt.Printf("option: %s rotors with %s steckers\n", rotors, st)
+			for _, r := range res {
+				e := encoder.Initialize(enig, makeKey(r.Offset))
+				fmt.Println(e.Encrypt(r.Message))
+			}
+			fmt.Print("is this a possible setting? (y/N)>")
+			resp, _ := reader.ReadString('\n')
+			if resp == "n\n" || resp == "N\n" || resp == "\n" {
+				continue
+			} else {
+				fmt.Println("where does it kind of stop making sense?")
+				resp, _ = reader.ReadString('\n')
+				fmt.Println(resp)
+			}
+		}
+	}
+
+}
+
+// expects list of results with same rotor order
+func combineSteckers(results []bombe.Result) []string {
+	out := make([]string, 0) // stecker lists
+	for _, r := range results {
+		inserted := false
+		steckers := checker.GetPlugs(r.State)
+		for i, l := range out {
+			if comb, ok := validCombination(steckers, l); ok {
+				inserted = true
+				out[i] = comb
+			}
+		}
+		if !inserted {
+			out = append(out, steckers)
+		}
+	}
+	return out
+}
+
+func validCombination(l1, l2 string) (string, bool) {
+	state := make(map[int]map[int]bool, len(l1))
+	for _, pair := range strings.Split(l1, " ") { // add l1 pairs
+		if _, ok := state[int(pair[0]-'A')]; !ok {
+			state[int(pair[0]-'A')] = make(map[int]bool, 1)
+		}
+		state[int(pair[0]-'A')][int(pair[1]-'A')] = true
+	}
+	for _, pair := range strings.Split(l2, " ") { // add l2 pairs
+		if _, ok := state[int(pair[0]-'A')]; !ok {
+			state[int(pair[0]-'A')] = make(map[int]bool, 1)
+		}
+		state[int(pair[0]-'A')][int(pair[1]-'A')] = true
+	}
+	isValid := checker.CheckIfPossiblePlugboard(state)
+	if isValid {
+		return checker.GetPlugs(state), isValid
+	}
+	return "", isValid
 }
 
 func stringify(l []int) string {
