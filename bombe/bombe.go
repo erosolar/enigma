@@ -1,7 +1,7 @@
 package bombe
 
-import "strconv"
 import "fmt"
+import "strconv"
 import "time"
 
 //GetResults takes in a settings object
@@ -10,7 +10,7 @@ import "time"
 // nthreads is how many threads to run in parallel
 // resChan will be closed once there are no more results
 // IMPORTANT: this function is intended to be run as a goroutine!!!
-func GetResults(settings Settings, nThreads int, resChan chan Result, killCh chan bool) {
+func GetResults(msg string, settings Settings, nThreads int, resChan chan Result, killCh chan bool) {
 	var bombes []Bombe
 	if settings.RotorOrder != nil {
 		bombes = make([]Bombe, 0, 1)
@@ -22,8 +22,6 @@ func GetResults(settings Settings, nThreads int, resChan chan Result, killCh cha
 			bombes = append(bombes, Setup(settings))
 		}
 	}
-	fmt.Printf("Running %d parallel threads on %d bombes\n", nThreads, len(bombes))
-	start := time.Now()
 	jobs := make(chan Bombe, nThreads)
 	ch := make(chan Result, 12)
 	doneCh := make(chan bool)
@@ -41,13 +39,11 @@ R:
 	for {
 		select {
 		case res := <-ch:
+			res.Message = msg
 			resChan <- res
 		case <-doneCh:
 			doneThreads++
 			if doneThreads == nThreads {
-				fmt.Println()
-				fmt.Println("Received all results")
-				fmt.Printf("bombes took: %s\n", time.Since(start))
 				break R
 			}
 		case _, ok := <-killCh:
@@ -56,7 +52,6 @@ R:
 			}
 		}
 	}
-	close(resChan)
 }
 
 func threadRun(jobCh chan Bombe, resultCh chan Result, doneCh chan bool) {
@@ -95,9 +90,6 @@ func (b Bombe) Run(resultChan chan Result, doneChan chan bool) {
 		b.makeSystem(offset)
 		pt := b.initialize()
 		b.findSteadyState(pt)
-		if offset%(26*26) == 0 {
-			fmt.Printf(".")
-		}
 		if testOutput(b.state) {
 			resultChan <- Result{
 				Offset:    offset,
