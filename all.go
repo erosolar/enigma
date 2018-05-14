@@ -37,6 +37,7 @@ func main() {
 
 	fmt.Print("Enter the message crib: ")
 	crib, _ := reader.ReadString('\n')
+	crib = strings.TrimSpace(crib)
 
 	fmt.Println("Please wait while we work.")
 

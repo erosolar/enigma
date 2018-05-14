@@ -41,7 +41,6 @@ R:
 	for {
 		select {
 		case res := <-ch:
-			fmt.Print("*")
 			resChan <- res
 		case <-doneCh:
 			doneThreads++

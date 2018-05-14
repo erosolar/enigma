@@ -72,7 +72,7 @@ func readFile(fileName string) ([]string, error) {
 }
 
 func makeMessage(input string) string {
-	return formatMessage(strings.Fields(input))
+	return formatMessage(strings.Fields(strings.TrimSpace(input)))
 }
 
 func formatMessage(s []string) string {
