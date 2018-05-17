@@ -31,4 +31,6 @@ type Result struct {
 	Rotors    []int
 	Printable string
 	State     map[int]map[int]bool
+	Message   string
+	Plugboard string
 }

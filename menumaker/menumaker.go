@@ -6,7 +6,7 @@ func MakeMenus(input, crib string) []Menu {
 	var menus []Menu
 	// check every possible place the crib could be
 	for i := 0; i <= len(input)-len(crib); i++ {
-		if ok, m := makeMenu(input[i:i+len(crib)], crib); ok {
+		if ok, m := makeMenu(i, input[i:i+len(crib)], crib); ok {
 			menus = append(menus, m)
 		}
 	}
@@ -14,7 +14,7 @@ func MakeMenus(input, crib string) []Menu {
 	return menus
 }
 
-func makeMenu(input, crib string) (bool, Menu) {
+func makeMenu(start int, input, crib string) (bool, Menu) {
 	m := Menu{
 		Connections: []string{},
 		NumLetters:  0,
@@ -24,7 +24,7 @@ func makeMenu(input, crib string) (bool, Menu) {
 		if byte(s) == crib[j] {
 			return false, m
 		}
-		m.addConnection(s, crib[j], j)
+		m.addConnection(s, crib[j], start+j)
 	}
 
 	m.reformat(crib)

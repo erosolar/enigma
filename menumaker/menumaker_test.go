@@ -24,7 +24,7 @@ func Test(t *testing.T) {
 			crib:  "WETTERVORHERSAGEBISKAYA",
 			result: []Menu{
 				Menu{
-					Connections: []string{"HX10", "BH17", "BS19", "BE11", "SY22", "RS9", "OS13", "RY6", "FR12", "RV7", "RW1", "EW2", "EO8", "AE23", "ET5", "EU16", "AG14", "AK20", "GK15", "AI21", "IQ18", "IT3", "TV4"},
+					Connections: []string{"HX14", "BH21", "BS23", "BE15", "SY26", "RS13", "OS17", "RY10", "FR16", "RV11", "RW5", "EW6", "EO12", "AE27", "ET9", "EU20", "AG18", "AK24", "GK19", "AI25", "IQ22", "IT7", "TV8"},
 					NumLetters:  18,
 				},
 			},
